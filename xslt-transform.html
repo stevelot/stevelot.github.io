@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XSLT Transformatie</title>
+</head>
+<body>
+    <h2>XSLT Transformatie</h2>
+    xml:<br>
+    <textarea id="xmlInput" style="width:100%; height:200px;">
+<AACS sessionid="123">
+    <RESPONSE command="GetIdentity" num="1">
+        <CODE>SUCCESS</CODE>
+        <DETAILS>
+            <ERRID>0</ERRID>
+            <ERRMSG />
+            <IDENTITIES>
+                <RECORDID id="111">
+                    <SURNAME>B.</SURNAME>
+                    <FIRSTNAME>C.</FIRSTNAME>
+                    <EMPLOYEENUMBER>111</EMPLOYEENUMBER>
+                    <VALIDFROM>2022-01-17 00:00:00</VALIDFROM>
+                    <VALIDTO>2032-01-17 00:00:00</VALIDTO>
+                    <CREDENTIALS>
+                        <CREDENTIAL CredId="1" Name="Badge" Value="2300111" Valid="1" ValidityReason="" ValidFrom="2000-01-01 00:00:00" ValidTo="2100-01-01 00:00:00" />
+                    </CREDENTIALS>
+                    <COMPANY />
+                    <DEPARTMENT />
+                    <TITLE />
+                    <EMPLOYEETYPE />
+                    <MOBILEPHONENUMBER />
+                    <EMAILADDRESS />
+                    <PRIVILEGES>
+                        <PRIVILEGE Name="SERVER" />
+                        <PRIVILEGE Name="SLAG" />
+                    </PRIVILEGES>
+                    <CARLICENSES>
+                        <CARLICENSE CarLicenseId="1" Value="1AAA222" Country="BE" />
+                    </CARLICENSES>
+                    <EMAILMANAGER />
+                    <WORKGROUP>XYZ1</WORKGROUP>
+                    <DELETED>0</DELETED>
+                    <FREEDEFS>
+                        <FREEDEF FdId="1" Value="" />
+                        <FREEDEF FdId="2" Value="" />
+                        <FREEDEF FdId="3" Value="" />
+                    </FREEDEFS>
+                    <ADDITIONALDATA>
+                        <LASTBOOKED TimeStamp="2025-03-18 15:16:53" Reader="Room1" Badge="2300111" />
+                    </ADDITIONALDATA>
+                </RECORDID>
+                <RECORDID id="2222">
+                    <SURNAME>M.</SURNAME>
+                    <FIRSTNAME>R.</FIRSTNAME>
+                    <EMPLOYEENUMBER>2222</EMPLOYEENUMBER>
+                    <VALIDFROM>2022-06-08 00:00:00</VALIDFROM>
+                    <VALIDTO>2032-06-08 00:00:00</VALIDTO>
+                    <CREDENTIALS>
+                        <CREDENTIAL CredId="1" Name="Badge" Value="230022" Valid="1" ValidityReason="" ValidFrom="2000-01-01 00:00:00" ValidTo="2100-01-01 00:00:00" />
+                    </CREDENTIALS>
+                    <COMPANY />
+                    <DEPARTMENT />
+                    <TITLE />
+                    <EMPLOYEETYPE />
+                    <MOBILEPHONENUMBER />
+                    <EMAILADDRESS />
+                    <PRIVILEGES>
+                        <PRIVILEGE Name="SERVER" />
+                        <PRIVILEGE Name="SLAG" />
+                    </PRIVILEGES>
+                    <CARLICENSES>
+                        <CARLICENSE CarLicenseId="1" Value="1BBB333" Country="BE" />
+                    </CARLICENSES>
+                    <EMAILMANAGER />
+                    <WORKGROUP>XYZ2</WORKGROUP>
+                    <DELETED>0</DELETED>
+                    <FREEDEFS>
+                        <FREEDEF FdId="1" Value="" />
+                        <FREEDEF FdId="2" Value="" />
+                        <FREEDEF FdId="3" Value="" />
+                    </FREEDEFS>
+                    <ADDITIONALDATA>
+                        <LASTBOOKED TimeStamp="2025-03-18 09:17:53" Reader="Room2" Badge="230022" />
+                    </ADDITIONALDATA>
+                </RECORDID>
+                <RECORDID id="33333">
+                    <SURNAME>E.</SURNAME>
+                    <FIRSTNAME>S.</FIRSTNAME>
+                    <EMPLOYEENUMBER>33333</EMPLOYEENUMBER>
+                    <VALIDFROM>2022-09-07 00:00:00</VALIDFROM>
+                    <VALIDTO>2032-09-07 00:00:00</VALIDTO>
+                    <CREDENTIALS>
+                        <CREDENTIAL CredId="1" Name="Badge" Value="23003" Valid="1" ValidityReason="" ValidFrom="2000-01-01 00:00:00" ValidTo="2100-01-01 00:00:00" />
+                    </CREDENTIALS>
+                    <COMPANY />
+                    <DEPARTMENT />
+                    <TITLE />
+                    <EMPLOYEETYPE />
+                    <MOBILEPHONENUMBER />
+                    <EMAILADDRESS />
+                    <PRIVILEGES>
+                        <PRIVILEGE Name="SERVER" />
+                    </PRIVILEGES>
+                    <EMAILMANAGER />
+                    <WORKGROUP>XYZ2</WORKGROUP>
+                    <DELETED>0</DELETED>
+                    <ADDITIONALDATA>
+                        <LASTBOOKED TimeStamp="2025-03-18 08:41:18" Reader="Room1" Badge="23003" />
+                    </ADDITIONALDATA>
+                </RECORDID>
+            </IDENTITIES>
+        </DETAILS>
+    </RESPONSE>
+</AACS>
+    </textarea><br>
+    xslt:<br>
+    <textarea id="xsltInput" style="width:100%; height:200px;">
+<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+    <xsl:output method="text" encoding="UTF-8" />
+    <xsl:template match="/AACS/RESPONSE/DETAILS/IDENTITIES">
+        <xsl:for-each select="RECORDID">
+            <xsl:value-of select="@id" />
+            <xsl:text>,</xsl:text>
+            <xsl:value-of select="FIRSTNAME" />
+            <xsl:text>,</xsl:text>
+            <xsl:value-of select="SURNAME" />
+            <xsl:text>,</xsl:text>
+            <xsl:value-of select="ADDITIONALDATA/LASTBOOKED/@TimeStamp" />
+            <xsl:text>&#10;</xsl:text>
+        </xsl:for-each>
+    </xsl:template>
+
+    <xsl:template match="/">
+        <xsl:text>RECORDID,employeenumber,naam,voornaam,lastbooked timestamp,locatie,badgeid&#10;</xsl:text>
+        <xsl:apply-templates select="/AACS/RESPONSE/DETAILS/IDENTITIES" />
+    </xsl:template>
+</xsl:stylesheet>
+    </textarea><br>
+    <button onclick="transformXML()">Transformeer XML</button><br>
+    <hr>
+    Output text;<br>
+    <textarea id="txtOutput" style="width:100%; height:200px;"></textarea><br>
+    Output html/xml (in pre):<br>
+    <pre id="preResult"></pre>
+
+    <script>
+        function transformXML() {
+            const xmlInput = document.getElementById('xmlInput').value;
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(xmlInput, "application/xml");
+
+            const xsltInput = document.getElementById('xsltInput').value;
+            const xsltDoc = parser.parseFromString(xsltInput, "application/xml");
+
+            const xsltProcessor = new XSLTProcessor();
+            xsltProcessor.importStylesheet(xsltDoc);
+
+            const resultDocument = xsltProcessor.transformToDocument(xmlDoc);
+            const resultText = new XMLSerializer().serializeToString(resultDocument);
+            document.getElementById('preResult').textContent = resultText;
+
+            document.getElementById('txtOutput').value = resultDocument.documentElement.getElementsByTagName('pre')[0].innerText;
+        }
+    </script>
+</body>
+</html>
